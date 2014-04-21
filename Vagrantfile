@@ -23,4 +23,12 @@ Vagrant.configure("2") do |config|
     green.vm.network :private_network, ip: "192.168.50.5"
   end
 
+  config.vm.define "proxy" do |proxy|
+    proxy.vm.network :private_network, ip: "192.168.50.6"
+    proxy.vm.provision :puppet, :module_path => "manifests/modules" do |puppet|
+      puppet.manifests_path = "manifests"
+      puppet.manifest_file  = "proxy.pp"
+    end
+  end
+
 end
