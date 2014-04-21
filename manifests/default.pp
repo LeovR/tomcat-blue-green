@@ -93,13 +93,13 @@ class java-development-env {
     logoutput => "on_failure"
   }
   exec { "extract_tomcat":
-    cwd         => "/vagrant",
-    command     => "tar zxf /tmp/tomcat.tar.gz ; mv apache* tomcat",
-    creates     => "/vagrant/tomcat",
+    cwd         => "/tmp",
+    command     => "tar zxf /tmp/tomcat.tar.gz ; mv apache* /srv/tomcat",
+    creates     => "/srv/tomcat",
     require     => Exec["get_tomcat"],
     refreshonly => true,
   }
-	file { "/vagrant/tomcat/conf/tomcat-users.xml":
+	file { "/srv/tomcat/conf/tomcat-users.xml":
 		ensure    => present,
 		content   => "<?xml version='1.0' encoding='utf-8'?>
 	<tomcat-users>
@@ -108,7 +108,7 @@ class java-development-env {
 		require   => Exec["extract_tomcat"],
 	  }
 
-  file { "/vagrant/tomcat":
+  file { "/srv/tomcat":
     ensure    => directory,
     owner     => "vagrant",
     mode      => 0755,
@@ -118,18 +118,20 @@ class java-development-env {
   file { "/etc/supervisor/conf.d/tomcat.conf":
     ensure    => present,
     content   => "[program:tomcat]
-command=/vagrant/tomcat/bin/catalina.sh run
-directory=/vagrant/tomcat/bin
+command=/srv/tomcat/bin/catalina.sh run
+directory=/srv/tomcat/bin
 autostart=yes
 user=vagrant
 stopsignal=QUIT",
-    require   => [ Package["supervisor"], File["/vagrant/tomcat/conf/tomcat-users.xml"] ],
+    require   => [ Package["supervisor"], File["/srv/tomcat/conf/tomcat-users.xml"] ],
     notify    => Exec["update_supervisor"],
   }
   exec { "update_supervisor":
     command     => "supervisorctl update",
     refreshonly => true,
   }
+
+  
 }
 
 include java-development-env
