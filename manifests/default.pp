@@ -120,7 +120,7 @@ class java-development-env {
     content   => "[program:tomcat]
 command=/vagrant/tomcat/bin/catalina.sh run
 directory=/vagrant/tomcat/bin
-autostart=no
+autostart=yes
 user=vagrant
 stopsignal=QUIT",
     require   => [ Package["supervisor"], File["/vagrant/tomcat/conf/tomcat-users.xml"] ],
